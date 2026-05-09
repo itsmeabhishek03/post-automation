@@ -1,0 +1,59 @@
+# ─────────────────────────────────────────────────────────────
+# docker-compose.yml — AI Content Automation
+# ─────────────────────────────────────────────────────────────
+# Usage:
+#   docker-compose up -d --build    # start in background
+#   docker-compose logs -f          # follow logs
+#   docker-compose down             # stop
+# ─────────────────────────────────────────────────────────────
+
+services:
+  post-automation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: post-automation
+
+    # Restart automatically on crash or VPS reboot
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    # All secrets come from the .env file — never hard-code them here
+    env_file:
+      - .env
+
+    environment:
+      NODE_ENV: production
+      TZ: UTC   # ensures cron fires at a predictable UTC time
+
+    volumes:
+      # Persist generated JSON posts across container restarts / rebuilds
+      - posts_data:/app/src/data/generated-posts
+
+    # Resource limits (optional but recommended for VPS stability)
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Named volume for persistent post storage
+volumes:
+  posts_data:
+    driver: local

@@ -1,0 +1,23 @@
+# Git ignore file for post-automation
+
+# ─── Environment ──────────────────────────────
+.env
+
+# ─── Dependencies ─────────────────────────────
+node_modules/
+
+# ─── Generated data ───────────────────────────
+# Uncomment this if you do NOT want to commit generated posts to git
+# src/data/generated-posts/
+
+# ─── Logs ─────────────────────────────────────
+*.log
+logs/
+
+# ─── OS files ─────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── IDE ──────────────────────────────────────
+.vscode/
+.idea/
