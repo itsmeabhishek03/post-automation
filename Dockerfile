@@ -43,11 +43,11 @@ RUN mkdir -p src/data/generated-posts && \
 
 USER appuser
 
-# Expose the Express port (default 3000, overridable via env)
-EXPOSE 3000
+# Expose the Express port (default 5000, overridable via env)
+EXPOSE 5000
 
 # Healthcheck — Docker will mark container unhealthy if this fails
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-  CMD wget -qO- http://localhost:3000/health || exit 1
+  CMD wget -qO- http://localhost:5000/health || exit 1
 
 CMD ["node", "src/server.js"]

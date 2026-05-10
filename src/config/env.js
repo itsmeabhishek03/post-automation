@@ -13,7 +13,7 @@ const envSchema = z.object({
   // Server
   PORT: z
     .string()
-    .default('3000')
+    .default('5000')
     .transform((val) => parseInt(val, 10)),
 
   // Gemini
