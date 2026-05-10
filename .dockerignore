@@ -1,0 +1,29 @@
+# ─── Dependencies ─────────────────────────────
+node_modules
+npm-debug.log
+
+# ─── Environment ──────────────────────────────
+.env
+.env.*
+
+# ─── Data ─────────────────────────────────────
+src/data/generated-posts/*
+
+# ─── Git ──────────────────────────────────────
+.git
+.gitignore
+
+# ─── OS files ─────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Docker ───────────────────────────────────
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# ─── IDE / Misc ───────────────────────────────
+.vscode/
+.idea/
+README.md
+test-pipeline.js

@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "3000:3000"
+      - "5000:5000"
 
     # All secrets come from the .env file — never hard-code them here
     env_file:
@@ -41,7 +41,7 @@ services:
           cpus: "0.5"
 
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/health"]
       interval: 30s
       timeout: 10s
       retries: 3

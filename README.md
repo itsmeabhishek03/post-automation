@@ -70,12 +70,12 @@ cp .env.example .env
 npm run dev   # uses node --watch for auto-restart
 ```
 
-The server starts on `http://localhost:3000`.
+The server starts on `http://localhost:5000`.
 
 ### 4. Trigger a manual pipeline run
 
 ```bash
-curl -X POST http://localhost:3000/generate-now
+curl -X POST http://localhost:5000/generate-now
 ```
 
 Watch the terminal logs — a post will be generated, saved, and emailed within ~30 seconds.
@@ -88,7 +88,7 @@ Copy `.env.example` to `.env` and fill in all values:
 
 | Variable | Description |
 |---|---|
-| `PORT` | Express server port (default: `3000`) |
+| `PORT` | Express server port (default: `5000`) |
 | `GEMINI_API_KEY` | Your Gemini API key (`AIzaSy...`) |
 | `RESEND_API_KEY` | Your [Resend](https://resend.com) API key (`re_...`) |
 | `RESEND_FROM_EMAIL` | Verified sender email (e.g. `noreply@yourdomain.com`) |
@@ -116,7 +116,7 @@ docker-compose up -d --build
 ### Check health
 
 ```bash
-curl http://localhost:3000/health
+curl http://localhost:5000/health
 ```
 
 ### View logs
@@ -178,14 +178,14 @@ Lists all saved post drafts (metadata only, newest first).
 Returns a full saved post by its ID (filename without `.json`).
 
 ```bash
-curl http://localhost:3000/posts/2026-05-10-quantum-computing
+curl http://localhost:5000/posts/2026-05-10-quantum-computing
 ```
 
 ### `POST /generate-now`
 Manually triggers the full pipeline immediately. Returns `202 Accepted` instantly and runs in the background.
 
 ```bash
-curl -X POST http://localhost:3000/generate-now
+curl -X POST http://localhost:5000/generate-now
 ```
 
 ---
