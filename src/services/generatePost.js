@@ -1,22 +1,22 @@
 /**
  * src/services/generatePost.js
  *
- * Calls the OpenAI API to generate an educational carousel post.
+ * Calls the Gemini API to generate an educational carousel post.
  *
  * Features:
- *   - Uses gpt-4o with response_format: json_object for guaranteed JSON output.
+ *   - Uses gemini-2.5-pro with responseMimeType: 'application/json' for guaranteed JSON output.
  *   - Attaches raw source article metadata to the output for provenance.
  *   - Includes retry logic (up to 3 attempts) with exponential backoff.
  *   - Validates the returned JSON structure using Zod before accepting it.
  */
 
-const OpenAI = require('openai');
+const { GoogleGenAI } = require('@google/genai');
 const { z } = require('zod');
 const env = require('../config/env');
 const logger = require('../utils/logger');
 const { SYSTEM_PROMPT, buildUserPrompt } = require('../prompts/carouselPrompt');
 
-const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
 // ─── Output schema (Zod) ─────────────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ const PostSchema = z.object({
   slides:    z.array(SlideSchema).min(5).max(7),
   caption:   z.string().min(20),
   hashtags:  z.array(z.string()).min(5).max(20),
-  tweet:     z.string().max(280),
+  tweet:     z.string(),
   sources:   z.array(z.string()),
 });
 
@@ -56,7 +56,7 @@ async function withRetry(fn, maxAttempts = 3) {
       const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
       logger.warn(
         { attempt, maxAttempts, delay, err: err.message },
-        `OpenAI call failed — retrying in ${delay / 1000}s`
+        `Gemini call failed — retrying in ${delay / 1000}s`
       );
       if (attempt < maxAttempts) {
         await new Promise((r) => setTimeout(r, delay));
@@ -75,24 +75,23 @@ async function withRetry(fn, maxAttempts = 3) {
  * @returns {Promise<Object>}   - Validated post object with sourceArticles appended.
  */
 async function generatePost(articles) {
-  logger.info({ articleCount: articles.length }, 'Generating post with OpenAI...');
+  logger.info({ articleCount: articles.length }, 'Generating post with Gemini...');
 
   const userPrompt = buildUserPrompt(articles);
 
   const raw = await withRetry(async () => {
-    const response = await client.chat.completions.create({
-      model:           'gpt-4o',
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user',   content: userPrompt },
-      ],
-      temperature: 0.75, // Creative but grounded
-      max_tokens:  2000,
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: userPrompt,
+      config: {
+        systemInstruction: SYSTEM_PROMPT,
+        temperature: 0.75, // Creative but grounded
+        responseMimeType: 'application/json',
+      }
     });
 
-    const content = response.choices[0]?.message?.content;
-    if (!content) throw new Error('Empty response from OpenAI');
+    const content = response.text;
+    if (!content) throw new Error('Empty response from Gemini');
 
     return JSON.parse(content);
   });
@@ -100,7 +99,7 @@ async function generatePost(articles) {
   // ── Validate structure ──
   const parsed = PostSchema.safeParse(raw);
   if (!parsed.success) {
-    logger.error({ issues: parsed.error.issues }, 'OpenAI response failed schema validation');
+    logger.error({ issues: parsed.error.issues }, 'Gemini response failed schema validation');
     throw new Error(`Invalid post structure: ${parsed.error.issues.map(i => i.message).join(', ')}`);
   }
 

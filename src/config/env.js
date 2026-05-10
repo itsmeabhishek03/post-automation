@@ -16,10 +16,10 @@ const envSchema = z.object({
     .default('3000')
     .transform((val) => parseInt(val, 10)),
 
-  // OpenAI
-  OPENAI_API_KEY: z
+  // Gemini
+  GEMINI_API_KEY: z
     .string()
-    .min(1, 'OPENAI_API_KEY is required'),
+    .min(1, 'GEMINI_API_KEY is required'),
 
   // Resend
   RESEND_API_KEY: z
@@ -28,6 +28,10 @@ const envSchema = z.object({
   RESEND_FROM_EMAIL: z
     .string()
     .email('RESEND_FROM_EMAIL must be a valid email'),
+  RESEND_REPLY_TO_EMAIL: z
+    .string()
+    .email('RESEND_REPLY_TO_EMAIL must be a valid email')
+    .optional(),
   ADMIN_EMAIL: z
     .string()
     .email('ADMIN_EMAIL must be a valid email'),

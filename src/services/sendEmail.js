@@ -30,6 +30,7 @@ async function sendEmail(post) {
   const { data, error } = await resend.emails.send({
     from:    env.RESEND_FROM_EMAIL,
     to:      [env.ADMIN_EMAIL],
+    reply_to: env.RESEND_REPLY_TO_EMAIL || undefined,
     subject,
     html,
     text,

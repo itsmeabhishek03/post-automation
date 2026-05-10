@@ -2,7 +2,7 @@
 
 > **"Complex futuristic concepts explained simply."**
 
-A production-ready Node.js backend that automatically curates interesting AI, future-tech, and science topics, generates educational Instagram/X carousel posts using OpenAI, and emails one high-quality draft to the admin every 2 days for manual review.
+A production-ready Node.js backend that automatically curates interesting AI, future-tech, and science topics, generates educational Instagram/X carousel posts using Gemini, and emails one high-quality draft to the admin every 2 days for manual review.
 
 ---
 
@@ -13,7 +13,7 @@ A production-ready Node.js backend that automatically curates interesting AI, fu
 | **Multi-source Fetching** | Hacker News, Reddit (r/MachineLearning, r/science, r/Futurology, etc.), TechCrunch, OpenAI Blog, DeepMind, MIT Tech Review, Wired |
 | **Content Scoring** | 0–100 score per article based on educational/futuristic keyword signals |
 | **Duplicate Detection** | Cross-checks previously generated topics to avoid repeating content |
-| **AI Generation** | GPT-4o with JSON mode — strict schema, 6–7 slides, hook, caption, tweet |
+| **AI Generation** | Gemini 2.5 Flash with JSON mode — strict schema, 6–7 slides, hook, caption, tweet |
 | **Rich Email Drafts** | Beautiful HTML email with slide cards, source citations, tweet preview |
 | **Local Storage** | Every draft saved as datestamped JSON with source provenance |
 | **Admin API** | `/health`, `/posts`, `/posts/:id`, `/generate-now` |
@@ -30,7 +30,7 @@ src/
 │   └── env.js                   # Zod-validated environment variables
 ├── services/
 │   ├── fetchContent.js          # Multi-source fetching + scoring + dedup
-│   ├── generatePost.js          # OpenAI generation + Zod validation + retry
+│   ├── generatePost.js          # Gemini generation + Zod validation + retry
 │   ├── savePost.js              # JSON file storage + list/getById helpers
 │   └── sendEmail.js             # Resend email delivery
 ├── prompts/
@@ -89,7 +89,7 @@ Copy `.env.example` to `.env` and fill in all values:
 | Variable | Description |
 |---|---|
 | `PORT` | Express server port (default: `3000`) |
-| `OPENAI_API_KEY` | Your OpenAI API key (`sk-...`) |
+| `GEMINI_API_KEY` | Your Gemini API key (`AIzaSy...`) |
 | `RESEND_API_KEY` | Your [Resend](https://resend.com) API key (`re_...`) |
 | `RESEND_FROM_EMAIL` | Verified sender email (e.g. `noreply@yourdomain.com`) |
 | `ADMIN_EMAIL` | Where post drafts are emailed |
@@ -260,7 +260,7 @@ Every 2 days at 10 AM (UTC)
          ▼
   generatePost.js
   ┌──────────────────────────────────────────┐
-  │  GPT-4o + JSON mode                      │
+  │  Gemini 2.5 Flash + JSON mode              │
   │  → System prompt (educational rules)     │
   │  → Top 5 candidates sent as context      │
   │  → Zod validates output schema           │
@@ -288,7 +288,7 @@ Every 2 days at 10 AM (UTC)
 
 - **Runtime:** Node.js 20 (Alpine)
 - **Framework:** Express.js
-- **AI:** OpenAI GPT-4o (JSON mode)
+- **AI:** Google Gemini 2.5 Flash (JSON mode)
 - **Email:** Resend
 - **Scheduler:** node-cron
 - **HTTP:** axios
